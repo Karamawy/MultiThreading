@@ -2,8 +2,8 @@
 #include<pthread.h>
 #include<bits/stdc++.h>
 using namespace std;
-int a[100][100],b[100][100],ans[100][100],ans2[100][100],m,n,k;
-int arr[100];
+int a[200][200],b[200][200],ans[200][200],ans2[200][200],m,n,k;
+int arr[200*200];
 unordered_map<int,pair<int,int>> thread_id;
 void* mul(void *arg){
             int index=*(int*)arg;
@@ -18,7 +18,7 @@ void* mul2(void *arg){
             ans2[index][i]+=a[index][j]*b[j][i];
 }
 void init(){
-    for(int i=0;i<100;++i)arr[i]=i;
+    for(int i=0;i<100*100;++i)arr[i]=i;
     }
 int main()
 {
@@ -34,14 +34,18 @@ int main()
         for(int j=0;j<k;++j)
             cin>>b[i][j];
     clock_t st=clock();
-    pthread_t p[100][100];
+    pthread_t p[200][200];
     int cnt=0;
     for(int i=0;i<n;++i)
     for(int j=0;j<k;++j){
         thread_id[cnt++]={i,j};
         pthread_create(&p[i][j],NULL,&mul,&arr[cnt]);
-}
-    pthread_join(p[n-1][k-1],NULL);
+    }
+	for(int i = 0 ;i < n; i++){
+		for(int j= 0 ; j < k ; j++){
+			pthread_join(p[i][j], NULL);
+		}
+	}
     for(int i=0;i<n;++i){
         for(int j=0;j<k;++j)
             cout<<ans[i][j]<<" ";
@@ -55,7 +59,8 @@ int main()
     cnt=0;
     for(int i=0;i<n;++i)
     pthread_create(&p2[i],NULL,&mul2,&arr[i]);
-    pthread_join(p2[n-1],NULL);
+    for(int i =0 ; i < n ; i++)
+    pthread_join(p2[i],NULL);
     for(int i=0;i<n;++i){
         for(int j=0;j<k;++j)
             cout<<ans2[i][j]<<" ";
